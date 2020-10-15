@@ -13,7 +13,9 @@ def find_latest_checkpoint(checkpoints_path, fail_safe=True):
 
     # Get all matching files
     all_checkpoint_files = glob.glob(checkpoints_path + ".*")
-    all_checkpoint_files = [ ff.replace(".index" , "" ) for ff in all_checkpoint_files ] # to make it work for newer versions of keras
+    # to make it work for newer versions of keras
+    all_checkpoint_files = [ff.replace(".index", "")
+                            for ff in all_checkpoint_files]
     # Filter out entries where the epoc_number part is pure number
     all_checkpoint_files = list(filter(lambda f: get_epoch_number_from_path(f)
                                        .isdigit(), all_checkpoint_files))
@@ -70,7 +72,8 @@ def train(model,
           ignore_zero_class=False,
           optimizer_name='adam',
           do_augment=False,
-          augmentation_name="aug_all"):
+          augmentation_name="aug_all",
+          callback=None):
 
     from .models.all_models import model_from_name
     # check if user gives model name instead of the model object
@@ -149,15 +152,19 @@ def train(model,
             val_images, val_annotations,  val_batch_size,
             n_classes, input_height, input_width, output_height, output_width)
 
-    callbacks = [
-        CheckpointsCallback(checkpoints_path)
-    ]
+    if callback is not None:
+        callbacks = [callback,
+                     CheckpointsCallback(checkpoints_path)]
+    else:
+        callbacks = [
+            CheckpointsCallback(checkpoints_path)
+        ]
 
     if not validate:
-        model.fit(train_gen, steps_per_epoch,
+        model.fit_generator(train_gen, steps_per_epoch,
                             epochs=epochs, callbacks=callbacks)
     else:
-        model.fit(train_gen,
+        model.fit_generator(train_gen,
                             steps_per_epoch,
                             validation_data=val_gen,
                             validation_steps=val_steps_per_epoch,
