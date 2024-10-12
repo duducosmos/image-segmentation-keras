@@ -17,7 +17,7 @@ from .models.config import IMAGE_ORDERING
 random.seed(DATA_LOADER_SEED)
 
 
-def load_model(model_config: dict, weights: str):
+def load_segmentation_model(model_config: dict, weights: str):
     from .models.all_models import model_from_name
 
     model = model_from_name[model_config['model_class']](
