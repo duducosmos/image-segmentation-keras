@@ -13,13 +13,12 @@ from .train import find_latest_checkpoint
 from .data_utils.data_loader import get_image_array, get_segmentation_array, \
     DATA_LOADER_SEED, class_colors, get_pairs_from_paths
 from .models.config import IMAGE_ORDERING
-from .models.all_models import model_from_name
 
 random.seed(DATA_LOADER_SEED)
 
 
 def load_model(model_config: dict, weights: str):
-    
+    from .models.all_models import model_from_name
 
     model = model_from_name[model_config['model_class']](
         model_config['n_classes'], input_height=model_config['input_height'],
@@ -34,6 +33,7 @@ def load_model(model_config: dict, weights: str):
 
 
 def model_from_checkpoint_path(checkpoints_path):
+    from .models.all_models import model_from_name
 
     assert (os.path.isfile(checkpoints_path+"_config.json")
             ), "Checkpoint not found."
